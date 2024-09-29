@@ -33,9 +33,11 @@ jobs:
         with:
           meteor-release: '2.15'
 
-      - name: Set short SHA
-        run: |
-          echo "GITHUB_SHORT_SHA=${GITHUB_SHA: -8}" >> $GITHUB_SHORT_SHA
+      - name: Get short SHA
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 8
 
       - name: Build application
         run: |
@@ -47,5 +49,5 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact-${{ env.GITHUB_SHORT_SHA }}
+          name: build-artifact-${{ steps.git-sha.outputs.sha }}
           path: ./build # Cambia el path si tu build genera el output en otro lugar
