@@ -20,6 +20,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 7
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,12 +38,6 @@ jobs:
         uses: meteorengineer/setup-meteor@v2
         with:
           meteor-release: '2.15'
-
-      - name: Get short SHA
-        id: git-sha
-        uses: hudsonm62/short-sha@v1
-        with:
-          length: 8
 
       - name: Build application
         run: |
