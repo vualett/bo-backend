@@ -35,7 +35,7 @@ jobs:
 
       - name: Set short SHA
         run: |
-          echo "SHORT_SHA=${GITHUB_SHA: -8}" >> $GITHUB_SHORT_SHA
+          echo "GITHUB_SHORT_SHA=${GITHUB_SHA: -8}" >> $GITHUB_SHORT_SHA
 
       - name: Build application
         run: |
