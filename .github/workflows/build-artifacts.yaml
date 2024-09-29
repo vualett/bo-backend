@@ -41,7 +41,7 @@ jobs:
           ls -ltr && pwd
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: build-artifact-${{ github.sha[-8:] }}
+          name: build-artifact-${{ substr(github.sha, -8, 8) }}
           path: ./build # Cambia el path si tu build genera el output en otro lugar
