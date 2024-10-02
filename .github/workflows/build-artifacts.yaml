@@ -61,3 +61,10 @@ jobs:
       - name: Listing Dirs and Files
         run: |
           ls -ltra && pwd && ls -ltra ../build/
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bo-backend-${{ steps.git-sha.outputs.sha }}
+          path: |
+            ../build
