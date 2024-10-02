@@ -1,0 +1,410 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:ua-parser-js:20180227':
+    - '@atlaskit/avatar > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.036Z'
+    - '@atlaskit/avatar > @atlaskit/tooltip > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/avatar > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/avatar > @atlaskit/tooltip > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/avatar > @atlaskit/tooltip > @atlaskit/popper > react-popper > create-react-context > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/button > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/button > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/calendar > @atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/drawer > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/item > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/avatar > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/blanket > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/item > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/avatar > @atlaskit/tooltip > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/code > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/avatar > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/blanket > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/code > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/avatar > @atlaskit/tooltip > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/avatar > @atlaskit/tooltip > @atlaskit/popper > react-popper > create-react-context > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/button > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/item > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/item > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/tooltip > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/item > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/layer > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/item > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/tooltip > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/dropdown-menu > @atlaskit/droplist > @atlaskit/tooltip > @atlaskit/popper > react-popper > create-react-context > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/field-text > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/field-text > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/inline-dialog > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/inline-dialog > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/field-text > @atlaskit/field-base > @atlaskit/inline-dialog > @atlaskit/popper > react-popper > create-react-context > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-dialog > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-dialog > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-dialog > @atlaskit/layer > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/button > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/inline-dialog > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/inline-dialog > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/inline-edit > @atlaskit/field-base > @atlaskit/inline-dialog > @atlaskit/popper > react-popper > create-react-context > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/input > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/input > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/icon > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/button > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/button > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/button > @atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/icon > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/pagination > @atlaskit/button > @atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/spinner > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+    - '@atlaskit/spinner > @atlaskit/theme > styled-components > fbjs > ua-parser-js':
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+  SNYK-JS-JSYAML-174129:
+    - '@atlaskit/drawer > @emotion/core > @emotion/css > babel-plugin-emotion > babel-plugin-macros > cosmiconfig > js-yaml':
+        reason: None given
+        expires: '2019-11-03T16:03:30.037Z'
+    - '@atlaskit/drawer > @atlaskit/docs > pretty-proptypes > emotion > babel-plugin-emotion > babel-plugin-macros > cosmiconfig > js-yaml':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @emotion/core > @emotion/css > babel-plugin-emotion > babel-plugin-macros > cosmiconfig > js-yaml':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+  SNYK-JS-LODASH-450202:
+    - '@atlaskit/drawer > @emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > pretty-proptypes > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        reason: None given
+        expires: '2019-11-03T16:03:30.038Z'
+    - consola > lodash:
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+  SNYK-JS-TAR-174125:
+    - bcrypt > node-pre-gyp > tar:
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+  'npm:chownr:20180731':
+    - bcrypt > node-pre-gyp > tar > chownr:
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+  'npm:deep-extend:20180409':
+    - bcrypt > node-pre-gyp > rc > deep-extend:
+        reason: None given
+        expires: '2019-11-03T16:03:30.039Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-450202:
+    - twilio > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - recharts > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-dates > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-chartjs-2 > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - consola > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - dwolla-v2 > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-big-calendar > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - rc-tabs > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - winston > async > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - recharts > react-smooth > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - mailparser > html-to-text > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - mongo-cursor-pagination > mongodb-extended-json > async > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - winston-papertrail > winston > async > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-confetti-canvas > babel-plugin-transform-decorators-legacy > babel-template > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - winston-daily-rotate-file > winston > async > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-confetti-canvas > babel-plugin-transform-decorators-legacy > babel-template > babel-traverse > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-confetti-canvas > babel-plugin-transform-decorators-legacy > babel-template > babel-types > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-confetti-canvas > babel-plugin-transform-decorators-legacy > babel-template > babel-traverse > babel-types > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - react-select > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - '@atlaskit/drawer > @emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2019-07-04T03:08:31.063Z'
+    - '@atlaskit/drawer > @atlaskit/docs > pretty-proptypes > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2019-07-04T03:08:31.063Z'
+    - '@atlaskit/drawer > @atlaskit/docs > @atlaskit/button > @emotion/core > @emotion/css > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2019-07-04T03:08:31.063Z'
+    - lodash:
+        patched: '2019-07-04T03:08:31.063Z'
+    - express-validator > lodash:
+        patched: '2019-08-21T21:33:57.277Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - sqreen > https-proxy-agent:
+        patched: '2019-10-04T16:00:22.850Z'
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-03T21:33:55.686Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-03T21:33:55.686Z'
