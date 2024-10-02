@@ -44,10 +44,11 @@ jobs:
         continue-on-error: false
 
       - run: |
-          pwd && ls -ltr ../ && \
-          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
+          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
+          cp -rp .env ecosystem.config.js ../bo-backend/
 
       - name: Install dependencies
+        working-directory: ./bo-backend
         run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
       - name: Set up Meteor
@@ -56,6 +57,7 @@ jobs:
           meteor-release: '2.15'
 
       - name: Listing Files
+        working-directory: ./bo-backend
         run: |
           ls -ltr && pwd && node -v && npm -v 
 
