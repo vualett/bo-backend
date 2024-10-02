@@ -44,8 +44,7 @@ jobs:
         continue-on-error: false
 
       - run: |
-          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
-          cp -rp .env ecosystem.config.js ../bo-backend/
+          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
 
       - name: Install dependencies
         working-directory: ./bo-backend
@@ -59,7 +58,7 @@ jobs:
       - name: Listing Files
         working-directory: ./bo-backend
         run: |
-          ls -ltr && pwd && node -v && npm -v 
+          ls -ltra && pwd && node -v && npm -v 
 
       - name: Set up Meteor
         uses: meteorengineer/setup-meteor@v2
