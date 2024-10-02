@@ -42,7 +42,7 @@ jobs:
 
       - name: Build application
         run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+          meteor build --server-only --architecture os.linux.x86_64 --directory build
 
       - uses: actions/setup-go@v5
         timeout-minutes: 5
@@ -56,15 +56,15 @@ jobs:
         continue-on-error: false
         run: |
           ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
-          cp -rp .env ecosystem.config.js ../build/
+          cp -rp .env ecosystem.config.js build/
 
       - name: Listing Dirs and Files
         run: |
-          ls -ltra && pwd && ls -ltra ../build/
+          ls -ltra && pwd && ls -ltra build/
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v4
         with:
           name: bo-backend-${{ steps.git-sha.outputs.sha }}
           path: |
-            ../build
+            ./build
