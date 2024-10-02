@@ -40,8 +40,8 @@ jobs:
 
       - name: Build application
         run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory build &&  \
-          cd build/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } 
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle &&  \
+          cd bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } 
 
       # - name: Build application
       #   run: |
