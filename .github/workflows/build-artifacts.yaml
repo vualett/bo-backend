@@ -36,13 +36,15 @@ jobs:
           node-version: '14.21.3'
 
       - name: Install dependencies
-        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+        run: |
+          npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
       - run: |
           ls -ltr && pwd
 
       - name: Build application
-        run: meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
 
       # - name: Build application
       #   run: |
