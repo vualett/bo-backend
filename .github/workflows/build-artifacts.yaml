@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ls -ltra && pwd && \
+          ls -ltra ../../ && ls -ltra ../ && pwd && \
           npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
       - name: Set up Meteor
