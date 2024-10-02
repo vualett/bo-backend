@@ -20,24 +20,30 @@ jobs:
         continue-on-error: false
 
       - name: Get short SHA
+        timeout-minutes: 5
+        continue-on-error: false
         id: git-sha
         uses: hudsonm62/short-sha@v1
         with:
           length: 7
 
       - name: Set up Node.js
+        timeout-minutes: 5
+        continue-on-error: false
         uses: actions/setup-node@v4
         with:
           node-version: '14.21.3'
 
       - uses: actions/setup-go@v5
+        timeout-minutes: 5
+        continue-on-error: false
         with:
           go-version: 1.18.1
           cache: false
-        timeout-minutes: 5
-        continue-on-error: false
 
       - name: Set up Meteor
+        timeout-minutes: 5
+        continue-on-error: false
         uses: meteorengineer/setup-meteor@v2
         with:
           meteor-release: '2.15'
@@ -47,7 +53,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ls -ltra ../../ && ls -ltra ../ && pwd && \
           npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
       - name: Set up Meteor
@@ -59,10 +64,6 @@ jobs:
         run: |
           ls -ltra && pwd && node -v && npm -v 
 
-
-
-      # - name: Build application
-      #   run: |
-      #     pwd && ls -ltr
-      #     # meteor build --server-only --architecture os.linux.x86_64 --directory bundle
-      #     # cp .env ecosystem.config.js bundle/bundle
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
