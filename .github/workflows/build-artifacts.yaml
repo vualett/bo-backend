@@ -1,12 +1,9 @@
-name: Build and Upload Artifact
+name: Deploy Application
 
 on:
   push:
-    branches:
-      - main  # O la rama que desees usar
-  # pull_request:
-  #   branches:
-  #     - main  # O la rama que desees usar
+    branches: 
+      - main
 
 defaults:
   run:
@@ -15,6 +12,7 @@ defaults:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,36 +23,19 @@ jobs:
         with:
           length: 7
 
-      - name: Set up Meteor
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.15'
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '14.21.3'
 
       - name: Install dependencies
-        run: |
-          npm install > /dev/null || { echo "An error occurred."; exit 1; }
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
-      - run: |
-          ls -ltr && pwd
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '2.15'
 
       - name: Build application
         run: |
           meteor build --server-only --architecture os.linux.x86_64 --directory bundle
-
-      # - name: Build application
-      #   run: |
-      #     meteor build --server-only --architecture os.linux.x86_64 --directory ../build && \
-      #     cd build/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } 
-
-
-
-      # - name: Upload build artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-artifact-${{ steps.git-sha.outputs.sha }}
-      #     path: ./build # Cambia el path si tu build genera el output en otro lugar
