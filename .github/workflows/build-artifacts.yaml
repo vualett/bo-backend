@@ -15,6 +15,10 @@ jobs:
 
     steps:
 
+      - uses: actions/checkout@v4
+        timeout-minutes: 5
+        continue-on-error: false
+
       - name: Get short SHA
         id: git-sha
         uses: hudsonm62/short-sha@v1
@@ -26,22 +30,6 @@ jobs:
         with:
           node-version: '14.21.3'
 
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          repository: ualett/bo-backend
-          token: ${{ secrets.GH_PAT }}
-        timeout-minutes: 5
-        continue-on-error: false
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          repository: ualett/infra-iac-aws
-          token: ${{ secrets.GH_PAT }}
-        timeout-minutes: 5
-        continue-on-error: false
-
       - uses: actions/setup-go@v5
         with:
           go-version: 1.18.1
@@ -49,8 +37,13 @@ jobs:
         timeout-minutes: 5
         continue-on-error: false
 
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '2.15'
+
       - run: |
-          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
+          ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
 
       - name: Install dependencies
         run: |
@@ -66,10 +59,7 @@ jobs:
         run: |
           ls -ltra && pwd && node -v && npm -v 
 
-      - name: Set up Meteor
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.15'
+
 
       # - name: Build application
       #   run: |
