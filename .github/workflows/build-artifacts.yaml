@@ -55,15 +55,10 @@ jobs:
         run: |
           npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
-      - name: Set up Meteor
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.15'
-
-      - name: Listing Files
+      - name: Setting up Meteor JS
         run: |
-          ls -ltra && pwd && node -v && npm -v 
+          curl "https://install.meteor.com/?release=2.15" | sh
 
       - name: Build application
         run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
