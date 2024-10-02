@@ -5,6 +5,17 @@ on:
     branches: 
       - main
 
+env:
+  APP_NAME: ${{ github.event.repository.name }}
+  NODE_VERSION: 14.21.3
+  GO_VERSION: 1.18.1
+  METEOR_VERSION: 2.15
+
+  SSH_HOST: ${{ vars.SSH_HOST }}
+  SSH_USER: ${{ vars.SSH_USER }}
+  SSH_PORT: ${{ vars.SSH_PORT }}
+  SSH_KEYS: ${{ secrets.SSH_KEYS }}
+
 defaults:
   run:
     shell: bash
@@ -28,27 +39,35 @@ jobs:
           length: 7
 
       - name: Set up Node.js
+        timeout-minutes: 5
+        continue-on-error: false
         uses: actions/setup-node@v4
         with:
-          node-version: '14.21.3'
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
+        timeout-minutes: 5
+        continue-on-error: false
         run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
       - name: Set up Meteor.js
+        timeout-minutes: 5
+        continue-on-error: false
         uses: meteorengineer/setup-meteor@v2
         with:
-          meteor-release: '2.15'
+          meteor-release: ${{ env.METEOR_VERSION }}
 
       - name: Build application
+        timeout-minutes: 5
+        continue-on-error: false
         run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory build
+          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
 
       - uses: actions/setup-go@v5
         timeout-minutes: 5
         continue-on-error: false
         with:
-          go-version: 1.18.1
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Download SSM Parameters
@@ -56,15 +75,26 @@ jobs:
         continue-on-error: false
         run: |
           ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
-          cp -rp .env ecosystem.config.js build/
+          cp -rp .env ecosystem.config.js ../build/
 
-      - name: Listing Dirs and Files
-        run: |
-          ls -ltra && pwd && ls -ltra build/
+      - name: Compress build with config files
+        run: tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C ../build .
 
-      - name: Uploading artifacts
-        uses: actions/upload-artifact@v4
+      - name: Copy build to app Server
+        uses: appleboy/scp-action@master
         with:
-          name: bo-backend-${{ steps.git-sha.outputs.sha }}
-          path: |
-            ./build
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+          target: "~/backend/"
+
+      # - name: Uploading artifacts
+      #   timeout-minutes: 5
+      #   continue-on-error: false
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: bo-backend-${{ steps.git-sha.outputs.sha }}
+      #     path: |
+      #       ./build
