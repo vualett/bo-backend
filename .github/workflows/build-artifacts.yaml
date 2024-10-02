@@ -44,7 +44,7 @@ jobs:
         continue-on-error: false
 
       - run: |
-          pwd && ls -ltr && \
+          pwd && ls -ltr ../ && \
           ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
 
       - name: Install dependencies
@@ -64,8 +64,8 @@ jobs:
         with:
           meteor-release: '2.15'
 
-      - name: Build application
-        run: |
-          pwd && ls -ltr
-          # meteor build --server-only --architecture os.linux.x86_64 --directory bundle
-          # cp .env ecosystem.config.js bundle/bundle
+      # - name: Build application
+      #   run: |
+      #     pwd && ls -ltr
+      #     # meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+      #     # cp .env ecosystem.config.js bundle/bundle
