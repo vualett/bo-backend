@@ -27,12 +27,17 @@ jobs:
         with:
           length: 7
 
-      - name: Set up Node.js
-        timeout-minutes: 5
-        continue-on-error: false
-        uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
         with:
-          node-version: '14.21.3'
+          meteor-release: '2.15'
+
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
 
       - uses: actions/setup-go@v5
         timeout-minutes: 5
@@ -41,24 +46,9 @@ jobs:
           go-version: 1.18.1
           cache: false
 
-      - name: Set up Meteor
-        timeout-minutes: 5
-        continue-on-error: false
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.15'
-
       - run: |
           ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
 
-      - name: Install dependencies
+      - name: Listing Dirs and Files
         run: |
-          npm install > /dev/null || { echo "An error occurred."; exit 1; }
-
-      - name: Setting up Meteor JS
-        run: |
-          curl "https://install.meteor.com/?release=2.15" | sh
-
-      - name: Build application
-        run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+          ls -ltra && pwd
