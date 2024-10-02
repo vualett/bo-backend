@@ -8,7 +8,6 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ./
 
 jobs:
   build-and-deploy:
@@ -29,6 +28,24 @@ jobs:
         with:
           node-version: '14.21.3'
 
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ualett/infra-iac-aws
+          token: ${{ secrets.GH_PAT }}
+        timeout-minutes: 5
+        continue-on-error: false
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.18.1
+          cache: false
+        timeout-minutes: 5
+        continue-on-error: false
+
+      - run: |
+          ./bin/golang/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend
+
       - name: Install dependencies
         run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
@@ -39,8 +56,8 @@ jobs:
 
       - name: Listing Files
         run: |
-          ls -ltr
+          ls -ltr && pwd
 
-      - name: Build application
-        run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+      # - name: Build application
+      #   run: |
+      #     meteor build --server-only --architecture os.linux.x86_64 --directory ../bundle
