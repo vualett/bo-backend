@@ -90,6 +90,17 @@ jobs:
           source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
           target: "~/backend/"
 
+      - name: Start application on the Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ secrets.SSH_KEYS }}
+          script: |
+            whoami
+            pwd
+
       # - name: Uploading artifacts
       #   timeout-minutes: 5
       #   continue-on-error: false
