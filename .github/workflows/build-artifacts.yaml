@@ -25,6 +25,11 @@ jobs:
         with:
           length: 7
 
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '2.15'
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,22 +38,18 @@ jobs:
       - name: Install dependencies
         run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
-      - name: Set up Meteor
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.15'
+      - run: |
+          ls -ltr && pwd
 
       - name: Build application
-        run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+        run: meteor build --server-only --architecture os.linux.x86_64 --directory bundle
 
       # - name: Build application
       #   run: |
       #     meteor build --server-only --architecture os.linux.x86_64 --directory ../build && \
       #     cd build/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } 
 
-      - run: |
-          ls -ltr && pwd
+
 
       # - name: Upload build artifact
       #   uses: actions/upload-artifact@v4
