@@ -58,6 +58,12 @@ jobs:
         run: |
           ls -ltr && pwd
 
-      # - name: Build application
-      #   run: |
-      #     meteor build --server-only --architecture os.linux.x86_64 --directory ../bundle
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '2.15'
+
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+          cp .env ecosystem.config.js bundle/bundle
