@@ -8,6 +8,7 @@ on:
 defaults:
   run:
     shell: bash
+    working-directory: ./
 
 jobs:
   build-and-deploy:
@@ -35,6 +36,10 @@ jobs:
         uses: meteorengineer/setup-meteor@v2
         with:
           meteor-release: '2.15'
+
+      - name: Listing Files
+        run: |
+          ls -ltr
 
       - name: Build application
         run: |
