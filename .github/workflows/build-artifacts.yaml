@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Get short SHA
         id: git-sha
@@ -27,6 +25,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '14.21.3'
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ualett/bo-backend
+          token: ${{ secrets.GH_PAT }}
+        timeout-minutes: 5
+        continue-on-error: false
 
       - uses: actions/checkout@v4
         with:
