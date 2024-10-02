@@ -117,7 +117,10 @@ jobs:
             export NVM_DIR="$HOME/.nvm" && \
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
             [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" && \
-            node -v && npm -v
+            rm -rf ~/bundle && \
+            tar -xzf ~/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/bundle && \
+            cd bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+            pm2 start --update-env || pm2 restart all --update-env
 
       # - name: Uploading artifacts
       #   timeout-minutes: 5
