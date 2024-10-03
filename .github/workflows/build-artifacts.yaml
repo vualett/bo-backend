@@ -77,13 +77,13 @@ jobs:
           ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
           cp -rp .env ecosystem.config.js ../build/
 
-      - name: Cache Node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - name: Cache Node modules
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: Compress build with config files
         timeout-minutes: 5
