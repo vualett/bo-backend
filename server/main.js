@@ -27,7 +27,7 @@ const startupMessage = () => {
 };
 
 Meteor.startup(() => {
-  if (['staging', 'development'].includes(ENV)) {
+  if (['staging', 'sandbox' ,'development'].includes(ENV)) {
     import('../imports/development/server/startup').then(() => logger.info('[DEVELOPMENT MODE]'));
   }
 
