@@ -102,28 +102,28 @@ jobs:
           source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
           target: "~/backend/"
 
-      - name: Start application on the Server
-        timeout-minutes: 5
-        continue-on-error: false
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          COMMIT_SHA: ${{ steps.git-sha.outputs.sha }}
-        with:
-          host: ${{ env.SSH_HOST }}
-          username: ${{ env.SSH_USER }}
-          port: ${{ env.SSH_PORT }}
-          key: ${{ secrets.SSH_KEYS }}
-          script: |
-            export NVM_DIR="$HOME/.nvm" && \
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
-            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" && \
-            rm -rf ~/bundle && \
-            tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/ && \
-            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
-            rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz && \
-            rm -rf ~/.pm2/ && \
-            cd ~/backend/ && pm2 reload all --update-env || pm2 restart all --update-env && \
-            pm2 list
+      # - name: Start application on the Server
+      #   timeout-minutes: 5
+      #   continue-on-error: false
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   env:
+      #     COMMIT_SHA: ${{ steps.git-sha.outputs.sha }}
+      #   with:
+      #     host: ${{ env.SSH_HOST }}
+      #     username: ${{ env.SSH_USER }}
+      #     port: ${{ env.SSH_PORT }}
+      #     key: ${{ secrets.SSH_KEYS }}
+      #     script: |
+      #       export NVM_DIR="$HOME/.nvm" && \
+      #       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
+      #       [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" && \
+      #       rm -rf ~/bundle && \
+      #       tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/ && \
+      #       cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+      #       rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz && \
+      #       rm -rf ~/.pm2/ && \
+      #       cd ~/backend/ && pm2 reload all --update-env || pm2 restart all --update-env && \
+      #       pm2 list
 
       # - name: Uploading artifacts
       #   timeout-minutes: 5
