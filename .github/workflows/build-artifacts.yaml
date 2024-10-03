@@ -121,6 +121,7 @@ jobs:
             tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/bundle && \
             cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
             rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz && \
+            rm -rf ~/.pm2/ && \
             echo "Reloading Application" && pm2 reload all --update-env || echo "Restarting Application" && pm2 restart all --update-env && \
             pm2 list
 
