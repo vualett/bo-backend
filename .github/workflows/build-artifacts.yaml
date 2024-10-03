@@ -120,9 +120,9 @@ jobs:
             rm -rf ~/backend/bundle && \
             tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/ && \
             cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
-            pm2 reload ecosystem.config.js --update-env || pm2 restart ecosystem.config.js --update-env && \
-            pm2 list
-            #rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz
+            cd ~/backend/ && pm2 reload ecosystem.config.js --update-env || pm2 restart ecosystem.config.js --update-env && \
+            pm2 list && \
+            rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz
 
       # - name: Uploading artifacts
       #   timeout-minutes: 5
