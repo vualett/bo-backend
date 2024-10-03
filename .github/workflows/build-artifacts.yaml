@@ -118,7 +118,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
             [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" && \
             rm -rf ~/bundle && \
-            tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/bundle && \
+            tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/ && \
             cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
             rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz && \
             rm -rf ~/.pm2/ && \
