@@ -12,7 +12,7 @@ env:
   SSH_HOST_PUBLIC_DNS: ${{ vars.DEV_SSH_PUBLIC_DNS }}
   SSH_HOST_PUBLIC_IP: ${{ vars.DEV_SSH_PUBLIC_DNS }}
   APP_NAME: ${{ github.event.repository.name }}
-  S3_BUCKET_NAME: ${{ vars.DEV_S3_BUCKET_NAME }}
+  S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
   NODEJS_VERSION: "14.21.3"
   METEOR_VERSION: "2.8.1"
 
