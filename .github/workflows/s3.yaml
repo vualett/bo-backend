@@ -62,8 +62,8 @@ jobs:
         run: |
           cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
           aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }} && \
-          ls -ltra && pwd && cd .. && ls -ltra && pwd
-          #mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../
+          mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../bo-backend/ && \
+          ls -ltra && pwd
 
       # - name: Copy build to Remote Host
       #   uses: appleboy/scp-action@master
@@ -72,7 +72,7 @@ jobs:
       #     username: ${{ env.SSH_USER }}
       #     port: ${{ env.SSH_PORT }}
       #     key: ${{ env.SSH_KEYS }}
-      #     source: ../build/"${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+      #     source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
       #     target: "~/"
 
       # - name: Configuring and Enabling the Application
