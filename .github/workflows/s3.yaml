@@ -62,39 +62,30 @@ jobs:
         run: |
           cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
           aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }}
-          
 
+      - name: Copy build to Remote Host
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST_PUBLIC_IP }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+          target: "~/"
 
-      # - name: Copy build to Remote Host
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ env.SSH_HOST }}
-      #     username: ${{ env.SSH_USER }}
-      #     port: ${{ env.SSH_PORT }}
-      #     key: ${{ env.SSH_KEYS }}
-      #     source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
-      #     target: "~/frontend/"
+      - name: Configuring and Enabling the Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST_PUBLIC_IP }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script_stop: true
+          script: |
+            set -e
+            source ~/.profile
+            source ~/.bashrc
 
-      # - name: Configuring Application
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ env.SSH_HOST }}
-      #     username: ${{ env.SSH_USER }}
-      #     port: ${{ env.SSH_PORT }}
-      #     key: ${{ env.SSH_KEYS }}
-      #     script_stop: true
-      #     script: |
-      #       set -e
-      #       source ~/.profile
-      #       source ~/.bashrc
+            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
-      #       export PATH="/home/ualettdev/.local/share/fnm:$PATH"
-      #       eval "$(/home/ualettdev/.local/share/fnm/fnm env --use-on-cd)"
-
-      #       cd ~/frontend
-      #       tar -xzf ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz -C .
-      #       rm ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
-      #       cd ~/frontend/bundle/programs/server && npm install --omit=dev
-      #       cd ../../
-      #       pm2 restart all --update-env || pm2 start all --update-env
-      #       pm2 list
+            npm -v && node -v && ls -ltra && pwd && cd ~ && ls -ltra && pwd
