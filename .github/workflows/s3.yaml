@@ -16,9 +16,11 @@ env:
   SSH_HOST_PUBLIC_DNS: ${{ vars.SSH_HOST_PUBLIC_DNS }}
   SSH_HOST_PUBLIC_IP: ${{ vars.SSH_HOST_PUBLIC_IP }}
   APP_NAME: ${{ github.event.repository.name }}
+  GH_PAT: ${{ secrets.GH_PAT }}
   S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
   NODEJS_VERSION: "14.21.3"
   METEOR_VERSION: "2.8.1"
+  PR_NUMBER: ${{ github.event.inputs.pr_number }}
 
 defaults:
   run:
@@ -31,6 +33,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate PR number
+        run: |
+          if ! [[ "${{ github.event.inputs.pr_number }}" =~ ^[0-9]+$ ]]; then
+            echo "Error: El número del Pull Request debe ser un número entero."
+            exit 1
+          fi
+          echo "Pull Request número ${{ github.event.inputs.pr_number }} es válido."
 
       - name: Get short SHA
         id: git-sha
