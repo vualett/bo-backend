@@ -89,3 +89,10 @@ jobs:
             export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
             npm -v && node -v && ls -ltra && pwd && cd ~ && ls -ltra && pwd
+
+            GIT_COMMIT=$(cat GIT_COMMIT) && tar -xzf bo-frontend-$GIT_COMMIT.tar.gz && \
+            rm -rf bo-frontend-$GIT_COMMIT.tar.gz && mv bundle/ frontend/
+            chown -R ualettdev:ualettdev /home/ualettdev/frontend/bundle/ && \
+            chmod -R 755 /home/ualettdev/frontend/bundle/ && \
+            cd bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+            cd ~/frontend && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env'
