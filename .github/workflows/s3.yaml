@@ -3,7 +3,7 @@ name: Dev deploy App
 on:
   push:
     branches: 
-      - master
+      - main
 
 env:
   SSH_PORT: ${{ vars.DEV_SSH_PORT }}
