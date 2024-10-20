@@ -6,11 +6,11 @@ on:
       - main
 
 env:
-  SSH_PORT: ${{ vars.DEV_SSH_PORT }}
-  SSH_USER: ${{ vars.DEV_SSH_USER }}
-  SSH_KEYS: ${{ secrets.DEV_PRIVATE_SSH_KEYS }}
-  SSH_HOST_PUBLIC_DNS: ${{ vars.DEV_SSH_PUBLIC_DNS }}
-  SSH_HOST_PUBLIC_IP: ${{ vars.DEV_SSH_PUBLIC_DNS }}
+  SSH_PORT: ${{ vars.SSH_PORT }}
+  SSH_USER: ${{ vars.SSH_USER }}
+  SSH_KEYS: ${{ secrets.SSH_KEYS }}
+  SSH_HOST_PUBLIC_DNS: ${{ vars.SSH_HOST_PUBLIC_DNS }}
+  SSH_HOST_PUBLIC_IP: ${{ vars.SSH_HOST_PUBLIC_IP }}
   APP_NAME: ${{ github.event.repository.name }}
   S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
   NODEJS_VERSION: "14.21.3"
