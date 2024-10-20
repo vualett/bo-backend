@@ -1,0 +1,103 @@
+name: Dev deploy App
+
+on:
+  push:
+    branches: 
+      - master
+
+env:
+  SSH_PORT: ${{ vars.DEV_SSH_PORT }}
+  SSH_USER: ${{ vars.DEV_SSH_USER }}
+  SSH_KEYS: ${{ secrets.DEV_PRIVATE_SSH_KEYS }}
+  SSH_HOST_PUBLIC_DNS: ${{ vars.DEV_SSH_PUBLIC_DNS }}
+  SSH_HOST_PUBLIC_IP: ${{ vars.DEV_SSH_PUBLIC_DNS }}
+  APP_NAME: ${{ github.event.repository.name }}
+  S3_BUCKET_NAME: ${{ vars.DEV_S3_BUCKET_NAME }}
+  NODEJS_VERSION: "14.21.3"
+  METEOR_VERSION: "2.8.1"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get short SHA
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 7
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+
+      - name: Install dependencies
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: ${{ env.METEOR_VERSION }}
+
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+
+      - name: Compress build with config files
+        run: |
+          cd ../build
+          tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C bundle
+
+      - name: Sync files to S3 bucket
+        run: |
+          aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }}
+
+
+      # - name: Copy build to Remote Host
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ env.SSH_HOST }}
+      #     username: ${{ env.SSH_USER }}
+      #     port: ${{ env.SSH_PORT }}
+      #     key: ${{ env.SSH_KEYS }}
+      #     source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+      #     target: "~/frontend/"
+
+      # - name: Configuring Application
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ env.SSH_HOST }}
+      #     username: ${{ env.SSH_USER }}
+      #     port: ${{ env.SSH_PORT }}
+      #     key: ${{ env.SSH_KEYS }}
+      #     script_stop: true
+      #     script: |
+      #       set -e
+      #       source ~/.profile
+      #       source ~/.bashrc
+
+      #       export PATH="/home/ualettdev/.local/share/fnm:$PATH"
+      #       eval "$(/home/ualettdev/.local/share/fnm/fnm env --use-on-cd)"
+
+      #       cd ~/frontend
+      #       tar -xzf ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz -C .
+      #       rm ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
+      #       cd ~/frontend/bundle/programs/server && npm install --omit=dev
+      #       cd ../../
+      #       pm2 restart all --update-env || pm2 start all --update-env
+      #       pm2 list
