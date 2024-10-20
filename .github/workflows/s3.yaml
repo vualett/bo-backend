@@ -60,8 +60,8 @@ jobs:
 
       - name: Compress build with config files
         run: |
-          cd ../build
-          tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C bundle
+          ls -ltra && \
+          tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C cd ../build/bundle
 
       - name: Sync files to S3 bucket
         run: |
