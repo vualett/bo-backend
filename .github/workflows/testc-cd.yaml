@@ -1,0 +1,142 @@
+name: Sandbox Deployment
+
+# on:
+#   push:
+#     branches: 
+#       - main
+
+on:
+  pull_request:
+    branches:
+      - sandbox
+  push:
+    branches: 
+      - sandbox
+
+env:
+  APP_NAME: ${{ github.event.repository.name }}
+  NODE_VERSION: 14.21.3
+  GO_VERSION: 1.18.1
+  METEOR_VERSION: 2.15
+
+  SSH_HOST: ${{ vars.SSH_HOST }}
+  SSH_USER: ${{ vars.SSH_USER }}
+  SSH_PORT: ${{ vars.SSH_PORT }}
+  SSH_KEYS: ${{ secrets.SSH_KEYS }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+
+      - uses: actions/checkout@v4
+        timeout-minutes: 5
+        continue-on-error: false
+
+      - name: Get short SHA
+        timeout-minutes: 5
+        continue-on-error: false
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 7
+
+      - name: Set up Node.js
+        timeout-minutes: 5
+        continue-on-error: false
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        timeout-minutes: 5
+        continue-on-error: false
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+
+      - name: Set up Meteor.js
+        timeout-minutes: 5
+        continue-on-error: false
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: ${{ env.METEOR_VERSION }}
+
+      - name: Build application
+        timeout-minutes: 5
+        continue-on-error: false
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+
+      - uses: actions/setup-go@v5
+        timeout-minutes: 5
+        continue-on-error: false
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Download SSM Parameters
+        timeout-minutes: 5
+        continue-on-error: false
+        run: |
+          ./deploy/bin/ssm-params-downloads-by-env -org Ualett -env SandBox -scheduled no -app backend &&
+          cp -rp .env ecosystem.config.js ../build/
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Compress build with config files
+        timeout-minutes: 5
+        continue-on-error: false
+        run: tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C ../build .
+
+      - name: Copy build to app Server
+        timeout-minutes: 5
+        continue-on-error: false
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+          target: "~/backend/"
+
+      - name: Start application on the Server
+        timeout-minutes: 5
+        continue-on-error: false
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          COMMIT_SHA: ${{ steps.git-sha.outputs.sha }}
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ secrets.SSH_KEYS }}
+          script: |
+            export NVM_DIR="$HOME/.nvm" && \
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
+            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" && \
+            rm -rf ~/backend/bundle && \
+            tar -xzf ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz -C ~/backend/ && \
+            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+            cd ~/backend/ && pm2 reload ecosystem.config.js --update-env || pm2 restart ecosystem.config.js --update-env && \
+            pm2 list && \
+            rm  ~/backend/bo-backend-${{ steps.git-sha.outputs.sha }}.tar.gz
+
+      # - name: Uploading artifacts
+      #   timeout-minutes: 5
+      #   continue-on-error: false
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: bo-backend-${{ steps.git-sha.outputs.sha }}
+      #     path: |
+      #       ./build
