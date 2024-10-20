@@ -58,14 +58,11 @@ jobs:
         run: |
           meteor build --server-only --architecture os.linux.x86_64 --directory ../build
 
-      - name: Compress build with config files
+      - name: Creates tar and upload it to S3
         run: |
-          ls -ltra ../ && ls -ltra && \
-          cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle
-
-      - name: Sync files to S3 bucket
-        run: |
+          cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
           aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }}
+          
 
 
       # - name: Copy build to Remote Host
