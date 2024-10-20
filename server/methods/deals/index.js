@@ -38,3 +38,5 @@ import './checkPaymentsNotInit';
 import './getTodaysCompletedCA';
 import './cancelDealTransfer';
 import './declinePayment';
+
+import './EarlyRemittance';

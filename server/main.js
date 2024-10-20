@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import os from 'os';
 import { Meteor } from 'meteor/meteor';
 import './plaid/methods';
@@ -27,7 +28,7 @@ const startupMessage = () => {
 };
 
 Meteor.startup(() => {
-  if (['staging', 'sandbox' ,'development'].includes(ENV)) {
+  if (['staging', 'development', 'sandbox', 'dev'].includes(ENV)) {
     import('../imports/development/server/startup').then(() => logger.info('[DEVELOPMENT MODE]'));
   }
 
@@ -41,5 +42,4 @@ Meteor.startup(() => {
   sentryInit();
   initWebNotifications();
   startupMessage();
-
 });

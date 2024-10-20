@@ -13,16 +13,15 @@ import { capitalizeFirstLetterOfEachWord, isUnderaged } from '../../utils/utils'
 import updatePromotersPanelInvitation from './updatePromotersPanelInvitation';
 import { validatePhoneNumber } from '../users/sendPhoneVerificationCode';
 import { InvitationStatusOptions } from './invitationStatusOptions';
-import automaticFlowVerify from './automaticFlowVerify';
 import assignAgent from '../validation/assignAgent';
 import changeStage from '../users/changeStage';
 import { STAGE, STATUS } from '../../consts/user';
 import { updateDocuments } from '../users/set/setConfigMethods';
 import changeStatus from '../users/changeStatus';
-
 import { ROLES } from '../../consts/roles';
 import customerStatus from '../users/dwolla/checkUserStatus';
 import createAssetReport from '../../../server/methods/users/plaid/createAssetReport';
+
 export async function checkInvitationAndMarkIt(userId) {
   check(userId, String);
 
@@ -97,10 +96,10 @@ export async function checkInvitationAndMarkIt(userId) {
         },
         ...(!!invitation.assignedAgent
           ? {
-              $addToSet: {
-                assignedAgent: invitation.assignedAgent
-              }
+            $addToSet: {
+              assignedAgent: invitation.assignedAgent
             }
+          }
           : {})
       }
     );
@@ -112,26 +111,27 @@ export async function checkInvitationAndMarkIt(userId) {
       eventType: 'user',
       ...(!!invitation.assignedAgent
         ? {
-            _by: {
-              name: capitalizeFirstLetterOfEachWord(
-                `${invitation.assignedAgent?.agent?.firstName} ${invitation.assignedAgent?.agent?.lastName}`
-              ),
-              id: invitation.assignedAgent?.agent?.id
-            }
+          _by: {
+            name: capitalizeFirstLetterOfEachWord(
+              `${invitation.assignedAgent?.agent?.firstName} ${invitation.assignedAgent?.agent?.lastName}`
+            ),
+            id: invitation.assignedAgent?.agent?.id
           }
+        }
         : {})
     });
-
-    await changeStage({
-      userId: user._id,
-      stage: STAGE.ONBOARDING.STAGE_1
-    });
-
-    await changeStatus({
-      userId: user._id,
-      status: STATUS.IDV_NOT_STARTED
-    });
   }
+
+  await changeStage({
+    userId: user._id,
+    stage: STAGE.ONBOARDING.STAGE_1
+  });
+
+  await changeStatus({
+    userId: user._id,
+    status: STATUS.IDV_NOT_STARTED
+  });
+
 }
 
 // Verifies if the other 2 parameters are meet and updates invitation
@@ -170,13 +170,13 @@ export async function markInvitationCompleted({ userId, validParameter }) {
       eventType: 'user',
       ...(!!onboardingAssignedAgent
         ? {
-            _by: {
-              name: capitalizeFirstLetterOfEachWord(
-                `${onboardingAssignedAgent?.agent?.firstName} ${onboardingAssignedAgent?.agent?.lastName}`
-              ),
-              id: onboardingAssignedAgent?.agent?.id
-            }
+          _by: {
+            name: capitalizeFirstLetterOfEachWord(
+              `${onboardingAssignedAgent?.agent?.firstName} ${onboardingAssignedAgent?.agent?.lastName}`
+            ),
+            id: onboardingAssignedAgent?.agent?.id
           }
+        }
         : {})
     });
 
@@ -187,9 +187,6 @@ export async function markInvitationCompleted({ userId, validParameter }) {
     ) {
       Meteor.users.update({ _id: user._id }, { $set: { automaticFlowVerify: true } });
       await createAssetReport(user._id);
-      setTimeout(async () => {
-        await automaticFlowVerify(user._id);
-      }, 10000);
 
       if (user?.offStage?.stage === STAGE.UNDERWRITING.STAGE_4) {
         await changeStage({

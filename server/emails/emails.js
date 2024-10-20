@@ -4,8 +4,16 @@ import logger from '../logger/log';
 import renderEmailTemplate from './templates';
 import { s3 } from '../aws/services';
 import capitalize from '../utils/capitalize';
-import { AWS_BUCKET_NAME, TRUSTPILOT_AUTOMATIC_INVITE_BCC } from '../keys';
+import { AWS_BUCKET_NAME, TRUSTPILOT_AUTOMATIC_INVITE_BCC, AWS_SIGNATURES_BUCKET_NAME } from '../keys';
 import { queueSendEmail } from '../queue/queue';
+import { uploadSignature } from '../api/documents/methods/uploadAdvanceRemittanceSignature';
+import format from 'date-fns/format';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+const convertBase64ToBuffer = (base64Data) => {
+  const base64Image = base64Data.split(';base64,').pop();
+  return Buffer.from(base64Image, 'base64');
+};
 
 export const sendFundingSourceAdded = (user, bankAccount) => {
   const verifiedEmail = user.emails.find((e) => e.verified);
@@ -33,6 +41,49 @@ export const sendFundingSourceRemoved = (user, bankAccount) => {
   };
 
   queueSendEmail(emailToSent);
+};
+
+export const sendRemittanceEmailWithAttachment = async (user, remittanceDetails, signatureBase64) => {
+  const verifiedEmail = user.emails.find((e) => e.verified);
+  if (!verifiedEmail) return;
+
+  const { recipientName, weeklyAmount, schedule, effectiveDate } = remittanceDetails;
+  const advancedAmount = weeklyAmount;
+  const formattedEffectiveDate = new Date(effectiveDate).toLocaleDateString();
+
+  const signatureBuffer = convertBase64ToBuffer(signatureBase64);
+
+  const fileName = `${user._id}/remittance_schedule_${format(new Date(), 'MMMM-dd-yyyy hh:mm:ss')}.png`;
+
+  await uploadSignature(signatureBuffer, user._id, fileName, 'image/png');
+
+  const params = {
+    Bucket: AWS_SIGNATURES_BUCKET_NAME,
+    Key: fileName
+  };
+
+  const command = new GetObjectCommand(params);
+
+  const signatureURL = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+  const htmlContent = renderEmailTemplate.earlyRemittanceInitiated({
+    user,
+    recipientName,
+    advancedAmount,
+    schedule,
+    effectiveDate: formattedEffectiveDate,
+    signatureBase64,
+    signatureURL
+  });
+
+  const emailToSend = {
+    to: `${capitalize(user.firstName)} <${verifiedEmail.address}>`,
+    subject: 'Remittance Schedule Update',
+    html: htmlContent,
+    userId: user._id
+  };
+
+  queueSendEmail(emailToSend);
 };
 
 export const sendDealApprovedEmail = async (user, deal, set, docId) => {

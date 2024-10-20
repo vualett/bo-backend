@@ -114,36 +114,43 @@ Accounts.onCreateUser((options, user) => {
         verified: true
       };
 
-      if (options.promoCode) {
+      const PROMOCODE = options?.promoCode ? options.promoCode :
+        options?.business?.type ? 'openinvite' : null;
+
+      if (PROMOCODE) {
         // verify if invitation exists
         const invitations = Invitations.findOne({ 'phone.number': _Phone }, { sort: { when: -1 } });
         if (invitations) {
           // update user marking invitedBy same as invitation
           newUser.invitedBy = invitations.by;
-        } else {
-          if (checkPromoCode(options.promoCode) === 'promoterCode') {
-            newUser.promoterCode = options.promoCode;
+        }
+        else {
+          if (checkPromoCode(PROMOCODE) === 'promoterCode') {
+            newUser.promoterCode = PROMOCODE;
             newUser.invitedBy = Meteor.users.findOne({
-              ownerPromoterCode: options.promoCode
+              ownerPromoterCode: PROMOCODE
             })?._id;
           } else {
-            newUser.promoCode = options.promoCode;
+            newUser.promoCode = PROMOCODE;
           }
+
           createInvitation({
             phone: options.phone,
             by:
-              checkPromoCode(options.promoCode) === 'promoterCode'
-                ? promoCodes.findOne({ _id: options.promoCode }).promoterId
-                : options.promoCode,
+              checkPromoCode(PROMOCODE) === 'promoterCode'
+                ? promoCodes.findOne({ _id: PROMOCODE }).promoterId
+                : PROMOCODE,
             metadata: {
-              name: options.firstName,
+              name: `${options.firstName} ${options.lastName}`,
               source: 'other',
               bestTimeCall: 'morning',
               arriveFor: false,
               business: options?.business?.business_name
             }
           });
+
         }
+
       }
     }
 

@@ -8,6 +8,7 @@ import dealApproved from './dealApproved.jsx';
 import customerCreated from './customerCreated.jsx';
 import resetPassword from './resetPassword.jsx';
 import dealApprovedAfterReevaluation from './dealApprovedAfterReevaluation.jsx';
+import earlyRemittanceInitiated from './earlyRemittanceInitiated.jsx';
 
 configStyleValidator({ warn: false });
 
@@ -20,7 +21,25 @@ const renderEmailTemplate = {
   fundingSourceAdded: ({ bankAccount }) => renderEmail(fundingSourceAdded(null, bankAccount)),
   fundingSourceRemoved: ({ bankAccount }) => renderEmail(fundingSourceRemoved(null, bankAccount)),
   cashAdvanceApproved: ({ user, deal }) => renderEmail(dealApproved(user, deal)),
-  cashAdvanceApprovedAfterReevaluation: ({ user }) => renderEmail(dealApprovedAfterReevaluation(user))
+  cashAdvanceApprovedAfterReevaluation: ({ user }) => renderEmail(dealApprovedAfterReevaluation(user)),
+  earlyRemittanceInitiated: ({
+    recipientName,
+    advancedAmount,
+    schedule,
+    effectiveDate,
+    signatureBase64,
+    signatureURL
+  }) =>
+    renderEmail(
+      earlyRemittanceInitiated({
+        recipientName,
+        advancedAmount,
+        schedule,
+        effectiveDate,
+        signatureBase64,
+        signatureURL
+      })
+    )
 };
 
 export default renderEmailTemplate;

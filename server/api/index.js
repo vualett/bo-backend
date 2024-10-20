@@ -13,6 +13,7 @@ import './getfile';
 
 import './getinfo/getCashAdvanceInfo';
 import './getinfo/getCustomerName';
+import './getDealMetrics';
 
 import './ping';
 import './renderMCA';

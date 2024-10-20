@@ -187,7 +187,7 @@ async function addBankAccount(item, userId) {
         insertLog(UserId, `Bank Added - ${bankAccount.bankName} ending ${bankAccount.mask}`);
         sendFundingSourceAdded(_user, bankAccount);
         if (!_user.plaidAssetReport || _user.plaidAssetReport.length === 0) {
-          createAssetReport(_user);
+          createAssetReport(_user._id);
         }
         updateBankChannels({ userID: _user._id });
       } catch (error) {

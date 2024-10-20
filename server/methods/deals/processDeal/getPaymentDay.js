@@ -1,13 +1,4 @@
-import {
-  addWeeks,
-  subDays,
-  addDays,
-  setHours,
-  startOfDay,
-  setISODay,
-  getISODay,
-  differenceInCalendarDays
-} from 'date-fns';
+import { addWeeks, addDays, setHours, startOfDay, setISODay, getISODay, differenceInCalendarDays } from 'date-fns';
 
 // DAY      ISODAY
 // monday     1
@@ -27,7 +18,7 @@ export default function getPaymentDay(date, ISODay) {
     if (diff < -1) newDate = addWeeks(newDate, 1);
   } else {
     const ISOIndex = getISODay(date);
-    if (ISOIndex === 5) newDate = subDays(newDate, 1);
+
     if (ISOIndex === 6) newDate = addDays(newDate, 2);
     if (ISOIndex === 7) newDate = addDays(newDate, 1);
   }

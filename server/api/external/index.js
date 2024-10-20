@@ -11,3 +11,9 @@ import './inOverdue';
 import './admins';
 import './deal';
 import './user';
+import './verifyUser';
+import './dwollarecord';
+import './trustpilot';
+
+import './hubspot/updateRemittanceDay'
+

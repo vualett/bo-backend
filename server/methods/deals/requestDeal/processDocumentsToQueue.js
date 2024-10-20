@@ -57,7 +57,7 @@ export async function processDocuments({ request, dealCreated, user }) {
     address: `${user?.address?.street1}`,
     phone: `${user?.phone?.number}`,
     entityType: `${user?.business?.entityType}`,
-    stateOfIncorporation: `${user?.business?.stateOfIncorporation}`,
+    stateOfIncorporation: `${user?.address?.state}`,
     physicalAddress: `${user?.business?.physicalAddress}`,
     mailingAddress: `${user?.business?.mailingAddress}`,
     federalTaxpayerId: `${user?.business?.federalTaxpayerId}`,

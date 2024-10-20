@@ -1,0 +1,180 @@
+name: Deploy Application
+
+on:
+  pull_request:
+    branches:
+      - sandbox
+  push:
+    branches: 
+      - sandbox
+env:
+  SSH_PORT: ${{ secrets.SANDBOX_BO_BACKEND_BASTION_SSH_PORT }}
+  SSH_USER: ${{ secrets.SANDBOX_BO_BACKEND_BASTION_SSH_USER }}
+  SSH_KEYS: ${{ secrets.SANDBOX_BO_BACKEND_BASTION_SSH_KEYS }}
+  SSH_HOST: ${{ secrets.SANDBOX_BO_BACKEND_BASTION_HOST }}
+  ENV_FILE: ${{ secrets.SANDBOX_BO_BACKEND_ENV_FILE }}
+  CONFIG_JS: ${{ secrets.SANDBOX_BO_BACKEND_ECOSYSTEM_CONFIG_JS_FILE }}
+  SSH_PORT_APP: ${{ secrets.SANDBOX_BO_BACKEND_APP_SSH_PORT }}
+  SSH_HOST_APP: ${{ secrets.SANDBOX_BO_BACKEND_APP_SSH_HOST }}
+  SSH_USER_APP: ${{ secrets.SANDBOX_BO_BACKEND_APP_SSH_USER }}
+  SSH_KEYS_APP: ${{ secrets.SANDBOX_BO_BACKEND_BASTION_SSH_KEYS}}
+  APP_NAME: "bo-backend"
+  TF_TOKEN_ENV: ${{ secrets.TF_API_TOKEN }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get short SHA
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 7
+
+      - name: Setup Terraform
+        timeout-minutes: 5
+        continue-on-error: false
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+          terraform_wrapper: false
+          cli_config_credentials_token: ${{ env.TF_TOKEN_ENV }}
+        env:
+          TF_VAR_git_commit_sha : ${{ steps.git-sha.outputs.sha }}
+
+      - name: Terraform Init
+        timeout-minutes: 5
+        continue-on-error: false
+        working-directory: ./terraform/env/sandbox/
+        env:
+          TF_VAR_git_commit_sha : ${{ steps.git-sha.outputs.sha }}
+        run: terraform init
+
+      - name: Terraform Plan
+        timeout-minutes: 5
+        continue-on-error: false
+        env:
+          TF_VAR_git_commit_sha : ${{ steps.git-sha.outputs.sha }}
+        working-directory: ./terraform/env/sandbox/
+        run: terraform fmt && terraform validate && terraform plan
+
+      - name: Terraform Apply
+        timeout-minutes: 5
+        continue-on-error: false
+        env:
+          TF_VAR_git_commit_sha : ${{ steps.git-sha.outputs.sha }}
+        working-directory: ./terraform/env/sandbox/
+        run: terraform apply -auto-approve
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14.21.3'
+
+      - name: Create config files
+        run: |
+          echo "$CONFIG_JS" > ecosystem.config.js
+          echo "$ENV_FILE" > .env
+
+      - name: Install dependencies
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '2.15'
+
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory bundle
+          cp .env ecosystem.config.js bundle/bundle
+
+      - name: Compress build with config files
+        run: tar -czf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" -C bundle .
+
+      - name: Create directory on Bastion Host
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script: mkdir -p ~/backend
+
+      - name: Copy build to Bastion Host
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+          target: "~/backend/"
+
+      - name: Transfer from Bastion Host to App Host and Update Environment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script_stop: true
+          script: |
+            ssh -tt -i ~/.ssh/sandbox_key -p ${{ env.SSH_PORT_APP }} ${{ env.SSH_USER_APP }}@${{ env.SSH_HOST_APP }} '
+              set -e
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Esto carga nvm
+              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Esto carga nvm bash_completion (opcional)
+              mkdir -p ~/backend/bundle
+              exit
+            '
+            scp -i ~/.ssh/sandbox_key -P ${{ env.SSH_PORT_APP }} ~/backend/${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz ${{ env.SSH_USER_APP }}@${{ env.SSH_HOST_APP }}:~/backend/
+            ssh -tt -i ~/.ssh/sandbox_key -p ${{ env.SSH_PORT_APP }} ${{ env.SSH_USER_APP }}@${{ env.SSH_HOST_APP }} '
+              set -e
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Esto carga nvm
+              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Esto carga nvm bash_completion (opcional)
+              cd ~/backend
+              
+              if [ -d "bundle" ]; then
+                mv bundle bundle-old && rm -rf bundle-old && mkdir bundle
+              fi
+              
+              tar -xzf ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz -C .
+              rm ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
+              echo "Build transferred and extracted successfully"
+              cd ~/backend/bundle/programs/server && ~/.nvm/versions/node/v14.21.3/bin/npm install --omit=dev
+              echo "Starting the app using PM2"
+              cd ~/backend/bundle && pm2 restart all --update-env
+              '
+
+      - name: Cleanup GitHub Actions runner
+        if: always()
+        run: |
+          rm -rf bundle
+          rm -f ${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
+
+      - name: Cleanup Bastion Host and App Server
+        if: always()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script: |
+            echo "Cleaning up Bastion Host"
+            rm -f ~/backend/${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
+            
+            echo "Cleaning up App Server"
+            ssh -i ~/.ssh/sandbox_key -p ${{ env.SSH_PORT_APP }} ${{ env.SSH_USER_APP }}@${{ env.SSH_HOST_APP }} "
+              rm -f ~/backend/${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz
+            "

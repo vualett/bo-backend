@@ -63,7 +63,7 @@ async function declinePayment(userID, dealID, paymentNumber) {
       await queueCyclicReappointmentScheduler(deal._id);
     }
 
-    if (ENV === 'development') {
+    if (ENV === 'development' || ENV === 'sandbox' || ENV === 'dev') {
       const set = {
         'payments.$.status': 'declined',
         'payments.$.declinedAt': new Date(),
@@ -121,8 +121,7 @@ async function declinePayment(userID, dealID, paymentNumber) {
 
       if (ERROR_CODE === 'R01' && deal.autoRescheduleCount > 0) {
         chosenSubStatus = SUB_STATUS.AUTOMATIC_TRUE_UP;
-      }
-      else if (ERROR_CODE === 'R01' && deal.autoRescheduleCount <= 0) {
+      } else if (ERROR_CODE === 'R01' && deal.autoRescheduleCount <= 0) {
         chosenSubStatus = SUB_STATUS.FAILED_ON_R01;
       }
 
@@ -131,7 +130,6 @@ async function declinePayment(userID, dealID, paymentNumber) {
         subStatus: chosenSubStatus
       });
     }
-
   } catch (error) {
     logger.error(`_dev.users.declinePayment[${userID}]${error}`);
     Sentry.captureException(error, { extra: userID });

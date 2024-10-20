@@ -17,7 +17,7 @@ declare module 'meteor/meteor' {
       IDVComplete: boolean;
       hasFunding: boolean;
       identityVerification: {
-        status: string
+        status: string;
       };
       address: {
         state: string;
@@ -145,7 +145,7 @@ declare module 'meteor/meteor' {
             name: string;
             numberOfPayments: number;
             termsOfPayment: number;
-            fee: Array<number>;
+            fee: number[];
           }>;
         }>;
       }>;
@@ -241,6 +241,7 @@ declare module 'meteor/meteor' {
       directDepositReference?: string;
       attempts: number;
       returnCode: string;
+      isGrouped?: boolean;
     }
     interface Metrics {
       _id: string;
@@ -331,12 +332,12 @@ declare module 'meteor/meteor' {
       initiatedBy?: string;
       transferUrl?: string;
       transfers?:
-      | Array<{
-        status: string;
-        transferUrl: string;
-        initiatedAt: Date;
-      }>
-      | false;
+        | Array<{
+            status: string;
+            transferUrl: string;
+            initiatedAt: Date;
+          }>
+        | false;
       paidAt?: Date;
     }
 
@@ -372,11 +373,11 @@ declare module 'meteor/meteor' {
     interface Invitations {
       _id: string;
       phone:
-      | string
-      | Array<{
-        number: string;
-        type: string;
-      }>;
+        | string
+        | Array<{
+            number: string;
+            type: string;
+          }>;
       status: string;
       used: boolean;
       userId: string;
@@ -447,7 +448,6 @@ declare module 'meteor/meteor' {
     scannedAt: Date;
     connection: ArgyleConnection;
   }
-}
 }
 
 declare module 'moneysafe';

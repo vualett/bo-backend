@@ -9,12 +9,10 @@ import Queue from '../../../queue/queue';
 import reschedulePayment from './reschedulePayment';
 import checkIfNewDatesValid from './checkIfNewDatesValid';
 
-async function reschedulePaymentMethod({ dealID, paymentNumber, newDate }) {
+export async function reschedulePaymentMethod({ dealID, paymentNumber, newDate }) {
   check(dealID, String);
   check(paymentNumber, Number);
   check(newDate, Date);
-
-  Security.checkRole(this.userId, ['super-admin', 'manager', 'support', 'overdue']);
 
   const deal = Deals.findOne({ _id: dealID });
   const payment = deal.payments.find((p) => p.number === paymentNumber);
@@ -80,5 +78,8 @@ const method = {
 DDPRateLimiter.addRule(method, 1, 500);
 
 Meteor.methods({
-  [method.name]: reschedulePaymentMethod
+  [method.name]: function reschedulePayment({ dealID, paymentNumber, newDate }) {
+    Security.checkRole(this.userId, ['super-admin', 'manager', 'support', 'overdue']);
+    reschedulePaymentMethod({ dealID, paymentNumber, newDate });
+  }
 });

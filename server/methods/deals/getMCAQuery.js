@@ -44,7 +44,7 @@ function getMCAQuery({ userID, draftDeal }) {
         phone: `${user?.phone?.number}`,
         industry: `${user?.business?.industry}`,
         entityType: `${user?.business?.entityType}`,
-        stateOfIncorporation: `${user?.business?.stateOfIncorporation}`,
+        stateOfIncorporation: `${user?.address?.state}`,
         physicalAddress: `${user?.business?.physicalAddress}`,
         mailingAddress: `${user?.business?.mailingAddress}`,
         federalTaxpayerId: `${user?.business?.federalTaxpayerId}`,
