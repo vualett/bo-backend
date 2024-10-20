@@ -35,23 +35,19 @@ jobs:
         run: |
           PR_NUMBER="${{ github.event.inputs.pr_number }}"
 
-          # Verificar si el PR_NUMBER es numérico
           if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
             echo "Error: El número del Pull Request debe ser un número entero."
             exit 1
           fi
 
-          # Verificar si el PR existe utilizando la API de GitHub
           PR_API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
-          PR_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$PR_API_URL")
+          PR_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ env.GH_PAT }}" "$PR_API_URL")
 
-          # Verificar si el PR no existe
           if echo "$PR_RESPONSE" | grep -q '"message": "Not Found"'; then
             echo "Error: El Pull Request #$PR_NUMBER no existe en el repositorio ${{ github.repository }}."
             exit 1
           fi
 
-          # Verificar si la autenticación es inválida
           if echo "$PR_RESPONSE" | grep -q '"message": "Bad credentials"'; then
             echo "Error: Credenciales inválidas para acceder a la API de GitHub."
             exit 1
