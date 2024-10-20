@@ -1,0 +1,133 @@
+name: pr deploy manually
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Número del Pull Request"
+        required: true
+        type: number
+
+env:
+  SSH_PORT: ${{ vars.SSH_PORT }}
+  SSH_USER: ${{ vars.SSH_USER }}
+  SSH_KEYS: ${{ secrets.DEV_SSH_KEYS }}
+  SSH_HOST_PUBLIC_DNS: ${{ vars.DEV_SSH_HOST_PUBLIC_DNS }}
+  SSH_HOST_PUBLIC_IP: ${{ vars.DEV_SSH_HOST_PUBLIC_IP }}
+  S3_BUCKET_NAME: ${{ vars.DEV_S3_BUCKET_NAME }}
+
+  APP_NAME: ${{ github.event.repository.name }}
+  NODEJS_VERSION: "14.21.3"
+  METEOR_VERSION: "2.15"
+  
+  GH_PAT: ${{ secrets.GH_PAT }}
+  PR_NUMBER: ${{ github.event.inputs.pr_number }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Validate PR number
+        continue-on-error: false
+        run: |
+          PR_NUMBER="${{ github.event.inputs.pr_number }}"
+
+          if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "Error: Debes especificar un valor válido."
+            exit 1
+          fi
+
+          PR_API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
+          PR_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ env.GH_PAT }}" "$PR_API_URL")
+
+          if echo "$PR_RESPONSE" | grep -q '"message": "Not Found"'; then
+            echo "Error: El Pull Request #$PR_NUMBER no existe en el repositorio ${{ github.repository }}."
+            exit 1
+          fi
+
+          if echo "$PR_RESPONSE" | grep -q '"message": "Bad credentials"'; then
+            echo "Error: Credenciales inválidas para acceder a la API de GitHub."
+            exit 1
+          fi
+
+          echo "Pull Request #$PR_NUMBER es válido."
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: refs/pull/${{ github.event.inputs.pr_number }}/merge
+
+      - name: Get short SHA
+        id: git-sha
+        uses: hudsonm62/short-sha@v1
+        with:
+          length: 7
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+
+      - name: Install dependencies
+        run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
+
+      - name: Set up Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: ${{ env.METEOR_VERSION }}
+
+      - name: Build application
+        run: |
+          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+
+      - name: Creates tar and upload it to S3
+        run: |
+          cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
+          aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }} && \
+          mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../bo-backend/ && \
+          ls -ltra ../bo-backend/
+
+      - name: Copy build to Remote Host
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST_PUBLIC_IP }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+          target: "~/"
+
+      - name: Configuring and Enabling the Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST_PUBLIC_IP }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script_stop: true
+          script: |
+            set -e
+            source ~/.profile
+            source ~/.bashrc
+
+            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+            
+            tar -xzf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" && \
+            chown -R ualettdev:ualettdev ~/bundle/ && \
+            chmod -R 755 ~/bundle/ && \
+            cp -rp ~/bundle/ ~/backend/ && cd ~/backend && \
+            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+            cd ~/backend && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env

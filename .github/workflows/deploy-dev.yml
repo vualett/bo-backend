@@ -1,25 +1,20 @@
-name: Dev deploy App
-
+name: stable branch deploy
 on:
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "Número del Pull Request"
-        required: true
-        type: number
+  push:
+    branches:
+      - master
 
 env:
   SSH_PORT: ${{ vars.SSH_PORT }}
   SSH_USER: ${{ vars.SSH_USER }}
-  SSH_KEYS: ${{ secrets.SSH_KEYS }}
-  SSH_HOST_PUBLIC_DNS: ${{ vars.SSH_HOST_PUBLIC_DNS }}
-  SSH_HOST_PUBLIC_IP: ${{ vars.SSH_HOST_PUBLIC_IP }}
+  SSH_KEYS: ${{ secrets.DEV_SSH_KEYS }}
+  SSH_HOST_PUBLIC_DNS: ${{ vars.DEV_SSH_HOST_PUBLIC_DNS }}
+  SSH_HOST_PUBLIC_IP: ${{ vars.DEV_SSH_HOST_PUBLIC_IP }}
+  S3_BUCKET_NAME: ${{ vars.DEV_S3_BUCKET_NAME }}
+
   APP_NAME: ${{ github.event.repository.name }}
-  GH_PAT: ${{ secrets.GH_PAT }}
-  S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
   NODEJS_VERSION: "14.21.3"
-  METEOR_VERSION: "2.8.1"
-  PR_NUMBER: ${{ github.event.inputs.pr_number }}
+  METEOR_VERSION: "2.15"
 
 defaults:
   run:
@@ -30,36 +25,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Validate PR number
-        continue-on-error: false
-        run: |
-          PR_NUMBER="${{ github.event.inputs.pr_number }}"
-
-          if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
-            echo "Error: El número del Pull Request debe ser un número entero."
-            exit 1
-          fi
-
-          PR_API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
-          PR_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ env.GH_PAT }}" "$PR_API_URL")
-
-          if echo "$PR_RESPONSE" | grep -q '"message": "Not Found"'; then
-            echo "Error: El Pull Request #$PR_NUMBER no existe en el repositorio ${{ github.repository }}."
-            exit 1
-          fi
-
-          if echo "$PR_RESPONSE" | grep -q '"message": "Bad credentials"'; then
-            echo "Error: Credenciales inválidas para acceder a la API de GitHub."
-            exit 1
-          fi
-
-          echo "Pull Request #$PR_NUMBER es válido."
-
-      - name: Checkout PR branch
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: refs/pull/${{ github.event.inputs.pr_number }}/merge
 
       - name: Get short SHA
         id: git-sha
@@ -67,7 +34,7 @@ jobs:
         with:
           length: 7
 
-      - name: Configure AWS Credentials
+      - name: Setting up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ secrets.AWS_REGION }}
@@ -82,23 +49,23 @@ jobs:
       - name: Install dependencies
         run: npm install > /dev/null || { echo "An error occurred."; exit 1; }
 
-      - name: Set up Meteor
+      - name: Set up Meteor js
         uses: meteorengineer/setup-meteor@v2
         with:
           meteor-release: ${{ env.METEOR_VERSION }}
 
-      - name: Build application
+      - name: Building the application
         run: |
           meteor build --server-only --architecture os.linux.x86_64 --directory ../build
 
-      - name: Creates tar and upload it to S3
+      - name: Creates tar file and upload it to S3
         run: |
           cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
           aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }} && \
           mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../bo-backend/ && \
           ls -ltra ../bo-backend/
 
-      - name: Copy build to Remote Host
+      - name: Copying tar file to the server
         uses: appleboy/scp-action@master
         with:
           host: ${{ env.SSH_HOST_PUBLIC_IP }}
@@ -108,7 +75,7 @@ jobs:
           source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
           target: "~/"
 
-      - name: Configuring and Enabling the Application
+      - name: Booting up the application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.SSH_HOST_PUBLIC_IP }}
