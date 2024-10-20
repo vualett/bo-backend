@@ -1,9 +1,13 @@
 name: Dev deploy App
 
+
 on:
-  push:
-    branches: 
-      - main
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Número del Pull Request"
+        required: true
+        type: number
 
 env:
   SSH_PORT: ${{ vars.SSH_PORT }}
