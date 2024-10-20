@@ -28,6 +28,7 @@ defaults:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
+    if:  ${{ inputs.pr_number }} 
 
     steps:
       - name: Checkout repository
