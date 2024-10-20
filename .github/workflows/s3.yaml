@@ -20,6 +20,7 @@ env:
   S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
   NODEJS_VERSION: "14.21.3"
   METEOR_VERSION: "2.8.1"
+  PR_NUMBER: ${{ github.event.inputs.pr_number }}
 
 defaults:
   run:
@@ -32,42 +33,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Validate PR number and existence
-        id: validate-pr
+      - name: Validate PR number
         run: |
-          PR_NUMBER="${{ github.event.inputs.pr_number }}"
-
-          # Verificar si el PR_NUMBER es numérico
-          if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
-            echo "Error: El valor del Pull Request debe ser un número entero."
+          if ! [[ "${{ github.event.inputs.pr_number }}" =~ ^[0-9]+$ ]]; then
+            echo "Error: El número del Pull Request debe ser un número entero."
             exit 1
           fi
-
-          # Configurar la URL de la API de GitHub para el PR
-          GITHUB_API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
-          AUTH_HEADER="Authorization: Bearer ${{ secrets.GH_PAT }}"
-
-          # Llamada a la API de GitHub para obtener el PR
-          PR_RESPONSE=$(curl -s -H "$AUTH_HEADER" "$GITHUB_API_URL")
-
-          # Verificar si el PR existe
-          if echo "$PR_RESPONSE" | grep -q '"message": "Not Found"'; then
-            echo "Error: El Pull Request #$PR_NUMBER no existe en el repositorio ${{ github.repository }}."
-            exit 1
-          fi
-
-          # Verificar si la autenticación es inválida
-          if echo "$PR_RESPONSE" | grep -q '"message": "Bad credentials"'; then
-            echo "Error: Credenciales inválidas para acceder a la API de GitHub."
-            exit 1
-          fi
-
-          echo "Pull Request #$PR_NUMBER es válido."
-
+          echo "Pull Request número ${{ github.event.inputs.pr_number }} es válido."
 
       - name: Get short SHA
         id: git-sha
