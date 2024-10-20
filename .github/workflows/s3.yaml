@@ -38,6 +38,7 @@ jobs:
 
       - name: Validate PR existence
         id: validate-pr
+        continue-on-error: false
         run: |
           PR_NUMBER="${{ github.event.inputs.pr_number }}"
           
