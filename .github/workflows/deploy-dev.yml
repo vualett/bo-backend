@@ -2,7 +2,7 @@ name: stable branch deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   SSH_PORT: ${{ vars.SSH_PORT }}
