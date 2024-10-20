@@ -94,5 +94,5 @@ jobs:
             chown -R ualettdev:ualettdev ~/bundle/ && \
             chmod -R 755 ~/bundle/ && \
             cp -rp ~/bundle/ ~/backend/ && cd ~/backend && \
-            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; }
-            # && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env
+            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+            cd ~/backend && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env
