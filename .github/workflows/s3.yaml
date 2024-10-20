@@ -75,26 +75,24 @@ jobs:
           source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
           target: "~/"
 
-      # - name: Configuring and Enabling the Application
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ env.SSH_HOST_PUBLIC_IP }}
-      #     username: ${{ env.SSH_USER }}
-      #     port: ${{ env.SSH_PORT }}
-      #     key: ${{ env.SSH_KEYS }}
-      #     script_stop: true
-      #     script: |
-      #       set -e
-      #       source ~/.profile
-      #       source ~/.bashrc
+      - name: Configuring and Enabling the Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.SSH_HOST_PUBLIC_IP }}
+          username: ${{ env.SSH_USER }}
+          port: ${{ env.SSH_PORT }}
+          key: ${{ env.SSH_KEYS }}
+          script_stop: true
+          script: |
+            set -e
+            source ~/.profile
+            source ~/.bashrc
 
-      #       export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
-      #       npm -v && node -v && ls -ltra && pwd && cd ~ && ls -ltra && pwd
-
-      #       GIT_COMMIT=$(cat GIT_COMMIT) && tar -xzf bo-frontend-$GIT_COMMIT.tar.gz && \
-      #       rm -rf bo-frontend-$GIT_COMMIT.tar.gz && mv bundle/ frontend/
-      #       chown -R ualettdev:ualettdev /home/ualettdev/frontend/bundle/ && \
-      #       chmod -R 755 /home/ualettdev/frontend/bundle/ && \
-      #       cd bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
-      #       cd ~/frontend && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env'
+            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+            
+            tar -xzf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" && \
+            chown -R ualettdev:ualettdev ~/bundle/ && \
+            chmod -R 755 ~/bundle/ && \
+            cp -rp ~/bundle/ ~/backend/ && cd ~/backend && \
+            cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; }
+            # && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env
