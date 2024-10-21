@@ -54,45 +54,46 @@ jobs:
         with:
           meteor-release: ${{ env.METEOR_VERSION }}
 
-      - name: Building the application
-        run: |
-          meteor build --server-only --architecture os.linux.x86_64 --directory ../build
-
-      - name: Creates tar file and upload it to S3
-        run: |
-          cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
-          aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }} && \
-          mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../${{ env.APP_NAME }} && \
-          ls -ltra ../${{ env.APP_NAME }}
-
-      - name: Copying tar file to the server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SSH_HOST_PUBLIC_IP }}
-          username: ${{ env.SSH_USER }}
-          port: ${{ env.SSH_PORT }}
-          key: ${{ env.SSH_KEYS }}
-          source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
-          target: "~/"
-
-      - name: Booting up the application
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SSH_HOST_PUBLIC_IP }}
-          username: ${{ env.SSH_USER }}
-          port: ${{ env.SSH_PORT }}
-          key: ${{ env.SSH_KEYS }}
-          script_stop: true
-          script: |
-            set -e
-            source ~/.profile
-            source ~/.bashrc
-
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-            
-            tar -xzf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" && \
-            chown -R ualettdev:ualettdev ~/bundle/ && \
-            chmod -R 755 ~/bundle/ && \
-            cp -rp ~/bundle/ ~/${{ env.APP_NAME }}/ && cd ~/${{ env.APP_NAME }} && \
-            cd ~/${{ env.APP_NAME }}/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
-            cd ~/${{ env.APP_NAME }} && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env
+          - name: Building the application
+          run: |
+            meteor build --server-only --architecture os.linux.x86_64 --directory ../build
+  
+        - name: Creates tar file and upload it to S3
+          run: |
+            cd ../build/ && tar -zcf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" bundle && \
+            aws s3 cp "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" s3://${{ env.S3_BUCKET_NAME }} && \
+            mv "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" ../bo-backend/ && \
+            ls -ltra ../bo-backend/
+  
+        - name: Copying tar file to the server
+          uses: appleboy/scp-action@master
+          with:
+            host: ${{ env.SSH_HOST_PUBLIC_IP }}
+            username: ${{ env.SSH_USER }}
+            port: ${{ env.SSH_PORT }}
+            key: ${{ env.SSH_KEYS }}
+            source: "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz"
+            target: "~/"
+  
+        - name: Booting up the application
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ env.SSH_HOST_PUBLIC_IP }}
+            username: ${{ env.SSH_USER }}
+            port: ${{ env.SSH_PORT }}
+            key: ${{ env.SSH_KEYS }}
+            script_stop: true
+            script: |
+              set -e
+              source ~/.profile
+              source ~/.bashrc
+  
+              export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+              
+              tar -xzf "${{ env.APP_NAME }}-${{ steps.git-sha.outputs.sha }}.tar.gz" && \
+              chown -R ualettdev:ualettdev ~/bundle/ && \
+              chmod -R 755 ~/bundle/ && \
+              cp -rp ~/bundle/ ~/backend/ && cd ~/backend && \
+              cd ~/backend/bundle/programs/server && npm install --omit-dev > /dev/null || { echo "An error occurred."; exit 1; } && \
+              cd ~/backend && source ~/.bashrc && pm2 start --update-env || pm2 save --update-env || pm2 reload --update-env || pm2 restart all --update-env
+  
